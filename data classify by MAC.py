@@ -4,7 +4,7 @@ res = {}
 i = 0
 j = 0
 filename = []
-filePath = '/data/test_class'
+filePath = 'test_class/'
 dic = (os.listdir(filePath))
 # print(dic)
 # print(dic[0])
@@ -30,7 +30,7 @@ while i < len(dic):
     # linecount = 1
     while j < len(filename):
         for lines in res.values():
-            o = open(str(filename[j]), 'a')
+            o = open('classified/'+str(filename[j]), 'a')
             for line in lines:
                 o.write(line)
             # linecount += 1
