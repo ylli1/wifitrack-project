@@ -9,7 +9,7 @@ dic = (os.listdir(filePath))
 # print(dic)
 # print(dic[0])
 while i < len(dic):
-    with open (filePath+"./"+dic[i]) as f:
+    with open (filePath+dic[i]) as f:
         a = f.readlines()
         for line in a:
             data = json.loads(line)
