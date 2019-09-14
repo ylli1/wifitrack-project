@@ -16,12 +16,12 @@ while i < len(dic):
             thisMac = data["hmacaddress"]
             temp = {}
             temp["changedon"] = data["changedon"]
-            temp["hmacaddress"] = data["hmacaddress"]
             temp["hapmacaddress"] = data["hapmacaddress"]
             temp["campus"] = data["campus"]
             temp["building"] = data["building"]
             temp["floor"] = data["floor"]
-            temp_line = str(temp)+"\n"
+            temp_json = json.dumps(temp)
+            temp_line = str(temp_json)+"\n"
             if thisMac in res:
                 res[thisMac].append(temp_line)
             else:
