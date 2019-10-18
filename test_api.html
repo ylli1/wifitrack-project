@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="test_api.css">
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.css' rel='stylesheet' />
+    
+    <!-- direction api -->
+	<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js'></script>
+	<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.css' type='text/css' />
+    
+    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Wifi Analysis - Path Finding</title>
+</head>
+<body>
+    <div class="heading">
+        <h1>Wifi Analysis - Path Finding at Unimelb</h1>
+    </div>
+
+        
+    </div>
+    <div class="dateChoose">
+            <select id = "mapChoose">
+                <option value="people">People</option>
+                <option value="device">Device</option>
+            </select>
+        Start Date
+        <input id = "date" type="datetime-local" class="startDate" name="trip-start"
+            value="2018-06-30T19:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
+        <button class="submit" onclick="getDate()">Submit</button>
+    </div>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openMap(event, 'People')" style="border-right: 1px solid #ccc;">People</button>
+        <button class="tablinks" onclick="openMap(event, 'Devices')" style="border-right: 1px solid #ccc;">Devices</button>
+        <!-- <button class="tablinks" onclick="openMap(event, 'Path')" style="border-right: 1px solid #ccc;">Path</button> -->
+    </div>
+
+    
+    <div id="map"></div>
+    <!-- <div id="Devices" class="tabcontent">
+        <div class="dateChoose">Start Date
+            <input type="datetime-local" class="startDate" name="trip-start"
+                value="2018-05-30T19:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
+            <button class="submit fr">Submit</button>
+        </div>
+        <div id="deviceMap"></div>
+    </div>
+
+    <div id="Path" class="tabcontent">
+        <div id="pathMap"></div>
+    </div> -->
+
+    <script >
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY2hhbmdkYWoiLCJhIjoiY2p6dWZ4ZnFpMDE1cjNtcGY4bTJ1Zm8ybyJ9.q9E3nHqoKER3Le3GWobzDA';
+
+        var mapType = document.getElementById("mapChoose").value;
+        console.log(mapType);
+
+        var date = document.getElementById("date").value;
+        console.log(date);
+
+        var submitJSON = {
+            "mapType" : mapType,
+            "date" : date
+        }
+        console.log(submitJSON);
+
+        // add base map 
+        var map = new mapboxgl.Map({
+            container: 'map',
+            // style: 'mapbox://styles/mapbox/streets-v11',
+            style: 'mapbox://styles/mapbox/light-v8',
+            center: [144.961027, -37.795947],
+            zoom: 14.5,
+        });
+
+
+        // // add a route planner
+        // map.addControl(new MapboxDirections({
+        //     accessToken: mapboxgl.accessToken
+        //     }), 
+        //     'top-left'
+        // );
+
+        map.addControl(new mapboxgl.NavigationControl());
+        
+        var jsonFormat = [
+            {"coordinates": [144.961027, -37.795947], "count": 100},
+            {"coordinates": [144.961027, -37.795967], "count": 200},
+            {"coordinates": [144.961037, -37.795947], "count": 300},
+            {"coordinates": [144.961057, -37.795957], "count": 400},
+        ]
+            
+        var peopleGeojson = [{
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [144.961027, -37.795947]
+            },
+            "properties": {
+                "building_name": "Art West",
+                "student": 100,
+                "staff": 200,
+                "total": 300,
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [144.960205, -37.797596]
+            },
+            "properties": {
+                "building_name": "The Spot",
+                "student": 100,
+                "staff": 200,
+                "total": 300,
+            }
+        }
+        ];
+
+        var sampleJson = {
+            // key1 & value1
+            "keyName1": {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [144.961027, -37.795947]
+            },
+            "properties": {
+                "building_name": "Art West",
+                "PC": 100,
+                "Mobile": 200,
+                "Laptop": 300,
+                "total": 600
+            }
+        },
+            //key2 & value2
+            "keyName2":{
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [144.960205, -37.797596]
+            },
+            "properties": {
+                "building_name": "The Spot",
+                "PC": 100,
+                "Mobile": 200,
+                "Laptop": 300,
+                "total": 600
+            }
+        }
+        }   
+
+        //var obj = JSON.parse(sampleJson);
+
+        // console.log(typeof(sampleJson));
+        function transferJson(sampleJson){
+            var geoJson = [];
+            for(var keyname in sampleJson){
+                geoJson.push(sampleJson[keyname]);
+            }
+            //geoJson.push(sampleJson[keyName1]);
+            console.log(geoJson);
+        }
+
+        //transferJson(sampleJson);
+        var peopleGeoJSON = transferJson(sampleJson);
+
+        
+        // Object.keys(sampleJson).forEach(function(key){
+        //     console.table('Key : ' + key + ', Value : ' + sampleJson[key])
+        // });
+
+        var deviceGeojson = [{
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [144.961027, -37.795947]
+            },
+            "properties": {
+                "building_name": "Art West",
+                "PC": 100,
+                "Mobile": 200,
+                "Laptop": 300,
+                "total": 600
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [144.960205, -37.797596]
+            },
+            "properties": {
+                "building_name": "The Spot",
+                "PC": 100,
+                "Mobile": 200,
+                "Laptop": 300,
+                "total": 600
+            }
+        }
+        ];
+        // var sampleGeojson = [];
+
+        // for (i = 0; i< jsonFormat.length; i++) {
+            
+        //     sampleGeojson.push ({
+        //         "type": "Feature",
+        //         "geometry": {
+        //             "type": "Point",
+        //             "coordinates": jsonFormat[i].coordinates
+        //         },
+        //         "properties": {
+        //             "count": jsonFormat[i].count
+        //         }
+        //     })
+        // }
+
+        console.log(peopleGeojson);
+        
+        map.on('load', function(){
+
+            // map.addSource("samplePoint", {
+            //     "type": "geojson",
+            //     "data": {
+            //         "type":"FeatureCollection",
+            //         "feature":sampleGeojson,
+            //     }
+                
+            // });
+
+            map.addLayer({
+                'id': 'test',
+                'type': 'circle',
+                'source' : {
+                    "type": "geojson",
+                    "data": {
+                        "type": "FeatureCollection",
+                        "features": peopleGeojson,
+                    }
+                   
+                },
+                'paint':{
+                    'circle-color': '#00b7bf',
+                    'circle-radius': 8,
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#333',
+                }
+            });
+
+            map.on('click', 'test', function (e) {
+					new mapboxgl.Popup()
+					.setLngLat(e.lngLat)
+					.setHTML("Building Name: " + e.features[0].properties.building_name
+                    + "<br> student: " + e.features[0].properties.student
+                    + "<br> staff: " + e.features[0].properties.staff
+                    + "<br> total: " + e.features[0].properties.total)
+					.addTo(map);
+				});
+
+        })
+
+    </script>
+</body>
+</html>
