@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="test_api.css">
+    <link rel="stylesheet" href="../static/test_api.css">
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.css' rel='stylesheet' />
     
@@ -12,6 +12,17 @@
     <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+    <!-- JQuery  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+    <!--chart api -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+	<script src="https://static.anychart.com/js/8.0.1/anychart-core.min.js"></script>
+    <script src="https://static.anychart.com/js/8.0.1/anychart-pie.min.js"></script>
+    
 
     <meta charset="UTF-8">
     <title>Wifi Analysis - Path Finding</title>
@@ -31,7 +42,7 @@
         Start Date
         <input id = "date" type="datetime-local" class="startDate" name="trip-start"
             value="2018-06-30T19:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
-        <button class="submit" onclick="getDate()">Submit</button>
+        <button class="submit" type="submit" onclick="sendDate()">Submit</button>
     </div>
 
     <div class="tab">
@@ -54,27 +65,14 @@
     <div id="Path" class="tabcontent">
         <div id="pathMap"></div>
     </div> -->
-
+    <!-- <div id="demo"></div> -->
     <script >
         mapboxgl.accessToken = 'pk.eyJ1IjoiY2hhbmdkYWoiLCJhIjoiY2p6dWZ4ZnFpMDE1cjNtcGY4bTJ1Zm8ybyJ9.q9E3nHqoKER3Le3GWobzDA';
-
-        var mapType = document.getElementById("mapChoose").value;
-        console.log(mapType);
-
-        var date = document.getElementById("date").value;
-        console.log(date);
-
-        var submitJSON = {
-            "mapType" : mapType,
-            "date" : date
-        }
-        console.log(submitJSON);
-
         // add base map 
         var map = new mapboxgl.Map({
             container: 'map',
-            // style: 'mapbox://styles/mapbox/streets-v11',
-            style: 'mapbox://styles/mapbox/light-v8',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            //style: 'mapbox://styles/mapbox/light-v8',
             center: [144.961027, -37.795947],
             zoom: 14.5,
         });
@@ -88,41 +86,7 @@
         // );
 
         map.addControl(new mapboxgl.NavigationControl());
-        
-        var jsonFormat = [
-            {"coordinates": [144.961027, -37.795947], "count": 100},
-            {"coordinates": [144.961027, -37.795967], "count": 200},
-            {"coordinates": [144.961037, -37.795947], "count": 300},
-            {"coordinates": [144.961057, -37.795957], "count": 400},
-        ]
-            
-        var peopleGeojson = [{
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [144.961027, -37.795947]
-            },
-            "properties": {
-                "building_name": "Art West",
-                "student": 100,
-                "staff": 200,
-                "total": 300,
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [144.960205, -37.797596]
-            },
-            "properties": {
-                "building_name": "The Spot",
-                "student": 100,
-                "staff": 200,
-                "total": 300,
-            }
-        }
-        ];
+
 
         var sampleJson = {
             // key1 & value1
@@ -134,10 +98,12 @@
             },
             "properties": {
                 "building_name": "Art West",
-                "PC": 100,
-                "Mobile": 200,
-                "Laptop": 300,
-                "total": 600
+                "detail":{
+                    "PC": 100,
+                    "Mobile": 200,
+                    "Laptop": 700,
+                },
+                "total": 1000
             }
         },
             //key2 & value2
@@ -149,91 +115,30 @@
             },
             "properties": {
                 "building_name": "The Spot",
-                "PC": 100,
-                "Mobile": 200,
-                "Laptop": 300,
+                "detail":{
+                    "PC": 100,
+                    "Mobile": 200,
+                    "Laptop": 300,
+                },
                 "total": 600
             }
         }
         }   
 
-        //var obj = JSON.parse(sampleJson);
 
-        // console.log(typeof(sampleJson));
         function transferJson(sampleJson){
             var geoJson = [];
             for(var keyname in sampleJson){
                 geoJson.push(sampleJson[keyname]);
             }
-            //geoJson.push(sampleJson[keyName1]);
-            console.log(geoJson);
+            return geoJson;
         }
 
-        //transferJson(sampleJson);
         var peopleGeoJSON = transferJson(sampleJson);
-
-        
-        // Object.keys(sampleJson).forEach(function(key){
-        //     console.table('Key : ' + key + ', Value : ' + sampleJson[key])
-        // });
-
-        var deviceGeojson = [{
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [144.961027, -37.795947]
-            },
-            "properties": {
-                "building_name": "Art West",
-                "PC": 100,
-                "Mobile": 200,
-                "Laptop": 300,
-                "total": 600
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [144.960205, -37.797596]
-            },
-            "properties": {
-                "building_name": "The Spot",
-                "PC": 100,
-                "Mobile": 200,
-                "Laptop": 300,
-                "total": 600
-            }
-        }
-        ];
-        // var sampleGeojson = [];
-
-        // for (i = 0; i< jsonFormat.length; i++) {
-            
-        //     sampleGeojson.push ({
-        //         "type": "Feature",
-        //         "geometry": {
-        //             "type": "Point",
-        //             "coordinates": jsonFormat[i].coordinates
-        //         },
-        //         "properties": {
-        //             "count": jsonFormat[i].count
-        //         }
-        //     })
-        // }
-
-        console.log(peopleGeojson);
+        console.log(peopleGeoJSON);
         
         map.on('load', function(){
 
-            // map.addSource("samplePoint", {
-            //     "type": "geojson",
-            //     "data": {
-            //         "type":"FeatureCollection",
-            //         "feature":sampleGeojson,
-            //     }
-                
-            // });
 
             map.addLayer({
                 'id': 'test',
@@ -242,13 +147,15 @@
                     "type": "geojson",
                     "data": {
                         "type": "FeatureCollection",
-                        "features": peopleGeojson,
+                        "features": peopleGeoJSON,
                     }
                    
                 },
                 'paint':{
                     'circle-color': '#00b7bf',
-                    'circle-radius': 8,
+                    'circle-radius': [
+                        '/',['get','total'],50
+                    ],
                     'circle-stroke-width': 1,
                     'circle-stroke-color': '#333',
                 }
@@ -257,14 +164,44 @@
             map.on('click', 'test', function (e) {
 					new mapboxgl.Popup()
 					.setLngLat(e.lngLat)
-					.setHTML("Building Name: " + e.features[0].properties.building_name
-                    + "<br> student: " + e.features[0].properties.student
-                    + "<br> staff: " + e.features[0].properties.staff
-                    + "<br> total: " + e.features[0].properties.total)
-					.addTo(map);
-				});
+					.setHTML(
+                     "Building Name: " + e.features[0].properties.building_name
+                    + "<br> detail: " + e.features[0].properties.detail
+                    + "<br> total: " + e.features[0].properties.total
+                    )
 
-        })
+					.addTo(map);
+                    });
+
+            })
+
+
+        function sendDate() {
+            {#var js={a: 1}#}
+            //send date JSON
+            var mapType = document.getElementById("mapChoose").value;
+            var date = document.getElementById("date").value;
+            var submitJSON = {
+                "mapType" : mapType,
+                "date" : date
+            }
+            console.log(submitJSON);
+            var data = JSON.stringify(submitJSON);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/users/');
+            xhr.setRequestHeader('Content-Type', 'application/json'); // （前端）声明json格式
+            xhr.send(data);// （前端）发送json数据
+            xhr.addEventListener('loadend', function() {
+                if(xhr.status == 201){ // 201，去看app.py！！
+                var user = JSON.parse(xhr.responseText);                           // （前端）处理接收的json数据
+                console.log(user);
+                }
+            }, false)};
+
+
+
+        
 
     </script>
 </body>
