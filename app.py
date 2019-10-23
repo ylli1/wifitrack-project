@@ -64,11 +64,10 @@ def GetDeviceDistribution(time_s):
     time_min = time_max - 100
 
     c = conn.execute(
-        "SELECT building, device, count(*) FROM BInT LEFT OUTER JOIN Device on BInT.mac = Career.mac WHERE CAST(tm as int) > ? AND CAST(tm as int) <= ? GROUP BY building, device",
+        "SELECT building, device, count(*) FROM BInT LEFT OUTER JOIN Device on BInT.mac = Device.mac WHERE CAST(tm as int) > ? AND CAST(tm as int) <= ? GROUP BY building, device",
         (time_min, time_max))
     for row in c:
-        print(row[0])
-        print(row[1])
+  
         if row[0] in buildlocationdict:
             if row[0] not in results:
                 results[row[0]] = {}
