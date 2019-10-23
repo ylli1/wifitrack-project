@@ -109,7 +109,7 @@ def add_user():
 
 
     else:
-        cursor.execute("select building,device from BInT, Device where BInt.mac = Device.mac and tm=t ")
+        cursor.execute("select building,device from BInT, Device where BInt.mac = Device.mac and tm="+t+" ")
         data = cursor.fetchall()
         recordBudList = []
         property = defaultdict(defaultdict)
