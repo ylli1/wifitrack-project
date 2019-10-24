@@ -4,11 +4,11 @@
     <link rel="stylesheet" href="../static/test_api.css">
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.css' rel='stylesheet' />
-    
+
     <!-- direction api -->
 	<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js'></script>
 	<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.css' type='text/css' />
-    
+
     <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
@@ -22,7 +22,7 @@
 
 	<script src="https://static.anychart.com/js/8.0.1/anychart-core.min.js"></script>
     <script src="https://static.anychart.com/js/8.0.1/anychart-pie.min.js"></script>
-    
+
 
     <meta charset="UTF-8">
     <title>Wifi Analysis - Path Finding</title>
@@ -32,7 +32,7 @@
         <h1>Wifi Analysis - Path Finding at Unimelb</h1>
     </div>
 
-        
+
     </div>
     <div class="dateChoose">
             <select id = "mapChoose">
@@ -41,34 +41,19 @@
             </select>
         Start Date
         <input id = "date" type="datetime-local" class="startDate" name="trip-start"
-            value="2018-06-30T19:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
+            value="2018-06-12T19:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
         <button class="submit" type="submit" onclick="sendDate()">Submit</button>
+        <button class="loadMap" type="submit" onclick="sendDate()">Submit</button>
+
     </div>
 
-    <div class="tab">
-        <button class="tablinks" onclick="openMap(event, 'People')" style="border-right: 1px solid #ccc;">People</button>
-        <button class="tablinks" onclick="openMap(event, 'Devices')" style="border-right: 1px solid #ccc;">Devices</button>
-        <!-- <button class="tablinks" onclick="openMap(event, 'Path')" style="border-right: 1px solid #ccc;">Path</button> -->
-    </div>
 
-    
+
     <div id="map"></div>
-    <!-- <div id="Devices" class="tabcontent">
-        <div class="dateChoose">Start Date
-            <input type="datetime-local" class="startDate" name="trip-start"
-                value="2018-05-30T19:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
-            <button class="submit fr">Submit</button>
-        </div>
-        <div id="deviceMap"></div>
-    </div>
 
-    <div id="Path" class="tabcontent">
-        <div id="pathMap"></div>
-    </div> -->
-    <!-- <div id="demo"></div> -->
     <script >
         mapboxgl.accessToken = 'pk.eyJ1IjoiY2hhbmdkYWoiLCJhIjoiY2p6dWZ4ZnFpMDE1cjNtcGY4bTJ1Zm8ybyJ9.q9E3nHqoKER3Le3GWobzDA';
-        // add base map 
+        // add base map
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v11',
@@ -77,13 +62,15 @@
             zoom: 14.5,
         });
 
+        var user;
+
 
         // // add a route planner
-        // map.addControl(new MapboxDirections({
-        //     accessToken: mapboxgl.accessToken
-        //     }), 
-        //     'top-left'
-        // );
+         //map.addControl(new MapboxDirections({
+           //  accessToken: mapboxgl.accessToken
+             //}),
+             //'top-left'
+         //);
 
         map.addControl(new mapboxgl.NavigationControl());
 
@@ -103,7 +90,7 @@
                     "Mobile": 200,
                     "Laptop": 700,
                 },
-                "total": 1000
+                "total": 100
             }
         },
             //key2 & value2
@@ -120,10 +107,10 @@
                     "Mobile": 200,
                     "Laptop": 300,
                 },
-                "total": 600
+                "total": 60
             }
         }
-        }   
+        }
 
 
         function transferJson(sampleJson){
@@ -134,37 +121,43 @@
             return geoJson;
         }
 
-        var peopleGeoJSON = transferJson(sampleJson);
-        console.log(peopleGeoJSON);
-        
+        var user = transferJson(sampleJson);
+        console.log(user);
+
         map.on('load', function(){
 
+            map.addSource('wifiData',{
+                'type': "geojson",
+                'data': {
+                        "type": "FeatureCollection",
+                        "features": user,
+                    }
+            });
 
             map.addLayer({
                 'id': 'test',
                 'type': 'circle',
-                'source' : {
-                    "type": "geojson",
-                    "data": {
-                        "type": "FeatureCollection",
-                        "features": peopleGeoJSON,
-                    }
-                   
-                },
+                'source' : 'wifiData',
                 'paint':{
                     'circle-color': '#00b7bf',
                     'circle-radius': [
-                        '/',['get','total'],50
+                        '/',['get','total'],10
                     ],
                     'circle-stroke-width': 1,
                     'circle-stroke-color': '#333',
+                    'circle-opacity': 0.3,
                 }
             });
 
-            map.on('click', 'test', function (e) {
-					new mapboxgl.Popup()
-					.setLngLat(e.lngLat)
-					.setHTML(
+            var popup = new mapboxgl.Popup({
+				closeButton: false,
+				closeOnClick: false
+			});
+
+            map.on('mouseenter', 'test', function (e) {
+					//new mapboxgl.Popup()
+					popup.setLngLat(e.lngLat)
+					popup.setHTML(
                      "Building Name: " + e.features[0].properties.building_name
                     + "<br> detail: " + e.features[0].properties.detail
                     + "<br> total: " + e.features[0].properties.total
@@ -173,7 +166,21 @@
 					.addTo(map);
                     });
 
+            map.on('mouseleave', 'test', function () {
+					map.getCanvas().style.cursor = '';
+					popup.remove();
+					});
+
+            map.on('click','test',function () {
+                var geoJSON2 = transferJson(user)
+                 map.getSource('wifiData').setData({
+                        "type": "FeatureCollection",
+                        "features":geoJSON2,
+                    });
+
             })
+
+            });
 
 
         function sendDate() {
@@ -194,14 +201,15 @@
             xhr.send(data);// （前端）发送json数据
             xhr.addEventListener('loadend', function() {
                 if(xhr.status == 201){ // 201，去看app.py！！
-                var user = JSON.parse(xhr.responseText);                           // （前端）处理接收的json数据
+                var userJSON = JSON.parse(xhr.responseText);                           // （前端）处理接收的json数据
+                user = transferJson(userJSON);
                 console.log(user);
                 }
             }, false)};
 
 
 
-        
+
 
     </script>
 </body>
