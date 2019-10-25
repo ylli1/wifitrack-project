@@ -40,8 +40,9 @@ def GetPeopleDistribution(time_s):
                 results[row[0]]["geometry"]["coordinates"] = [cds[1], cds[0]]
                 results[row[0]]["properties"] = {}
                 results[row[0]]["properties"]["building_name"] =row[0]
-                results[row[0]]["properties"]["Student"] = 0
-                results[row[0]]["properties"]["Staff"] = 0
+                results[row[0]]["properties"]["detail"] = {}
+                results[row[0]]["properties"]["detail"]["Student"] = 0
+                results[row[0]]["properties"]["detail"]["Staff"] = 0
                 results[row[0]]["properties"]["total"] = 0
 
             if row[1] == "student":
@@ -78,9 +79,10 @@ def GetDeviceDistribution(time_s):
                 results[row[0]]["geometry"]["coordinates"] = [cds[1], cds[0]]
                 results[row[0]]["properties"] = {}
                 results[row[0]]["properties"]["building_name"] =row[0]
-                results[row[0]]["properties"]["PC"] = 0
-                results[row[0]]["properties"]["mobile"] = 0
-                results[row[0]]["properties"]["laptop"] = 0
+                results[row[0]]["properties"]["detail"] = {}
+                results[row[0]]["properties"]["detail"]["PC"] = 0
+                results[row[0]]["properties"]["detail"]["mobile"] = 0
+                results[row[0]]["properties"]["detail"]["laptop"] = 0
                 results[row[0]]["properties"]["total"] = 0
 
             if row[1] == "PC":
@@ -89,7 +91,7 @@ def GetDeviceDistribution(time_s):
             elif row[1] == "laptop":
                 results[row[0]]["properties"]["laptop"] += row[2]
                 results[row[0]]["properties"]["total"] += row[2]
-            else:
+            elif row[1] == "mobile":
                 results[row[0]]["properties"]["mobile"] += row[2]
                 results[row[0]]["properties"]["total"] += row[2]
 
