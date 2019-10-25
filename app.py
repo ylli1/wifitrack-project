@@ -41,15 +41,15 @@ def GetPeopleDistribution(time_s):
                 results[row[0]]["properties"] = {}
                 results[row[0]]["properties"]["building_name"] =row[0]
                 results[row[0]]["properties"]["detail"] = {}
-                results[row[0]]["properties"]["detail"]["Student"] = 0
-                results[row[0]]["properties"]["detail"]["Staff"] = 0
+                results[row[0]]["properties"]["detail"]["student"] = 0
+                results[row[0]]["properties"]["detail"]["staff"] = 0
                 results[row[0]]["properties"]["total"] = 0
 
             if row[1] == "student":
-                results[row[0]]["properties"]["Student"] += row[2]
+                results[row[0]]["properties"]["detail"]["student"] += row[2]
                 results[row[0]]["properties"]["total"] += row[2]
             elif row[1] == "staff":
-                results[row[0]]["properties"]["Staff"] += row[2]
+                results[row[0]]["properties"]["detail"]["staff"] += row[2]
                 results[row[0]]["properties"]["total"] += row[2]
 
     conn.close()
@@ -86,13 +86,13 @@ def GetDeviceDistribution(time_s):
                 results[row[0]]["properties"]["total"] = 0
 
             if row[1] == "PC":
-                results[row[0]]["properties"]["PC"] += row[2]
+                results[row[0]]["properties"]["detail"]["PC"] += row[2]
                 results[row[0]]["properties"]["total"] += row[2]
             elif row[1] == "laptop":
-                results[row[0]]["properties"]["laptop"] += row[2]
+                results[row[0]]["properties"]["detail"]["laptop"] += row[2]
                 results[row[0]]["properties"]["total"] += row[2]
             elif row[1] == "mobile":
-                results[row[0]]["properties"]["mobile"] += row[2]
+                results[row[0]]["properties"]["detail"]["mobile"] += row[2]
                 results[row[0]]["properties"]["total"] += row[2]
 
 
