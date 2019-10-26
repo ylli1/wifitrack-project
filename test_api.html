@@ -59,7 +59,8 @@
     }
 
     .dateChoose{
-        width: 1000px;
+        margin: 10px auto 10px;
+        width: 800px;
     }
 </style>
     <div class="heading">
@@ -106,7 +107,7 @@
     <script >
 
         mapboxgl.accessToken = 'pk.eyJ1IjoiY2hhbmdkYWoiLCJhIjoiY2p6dWZ4ZnFpMDE1cjNtcGY4bTJ1Zm8ybyJ9.q9E3nHqoKER3Le3GWobzDA';
-        // add base map
+        // add classify map
         var classifyMap = new mapboxgl.Map({
             container: 'classify',
             style: 'mapbox://styles/mapbox/streets-v11',
@@ -115,6 +116,7 @@
             zoom: 14.5,
         });
 
+        //add pathmap
          var pathMap = new mapboxgl.Map({
             container: 'path',
             //style: 'mapbox://styles/mapbox/streets-v11',
@@ -123,11 +125,13 @@
             zoom: 14.5,
         });
 
+        //add swipe funtion
         var map= new mapboxgl.Compare(classifyMap, pathMap, {
             // Set this to enable comparing two maps by mouse movement:
             // mousemove: true
         });
 
+        //create global empty variables
         var user;
         var user2;
 
@@ -142,6 +146,7 @@
         //classifyMap.addControl(new mapboxgl.NavigationControl());
 
 
+        //initial JSON for classify map
         var sampleJson = {
             // key1 & value1
             "keyName1": {
@@ -180,6 +185,7 @@
         }
 
 
+        //transfer JSON to GeoJSON feature collection
         function transferJson(sampleJson){
             var geoJson = [];
             for(var keyname in sampleJson){
@@ -188,9 +194,11 @@
             return geoJson;
         }
 
+
         var user = transferJson(sampleJson);
         console.log(user);
 
+        //load classify map
         classifyMap.on('load', function(){
 
             classifyMap.addSource('wifiData',{
@@ -248,6 +256,119 @@
             })
 
             });
+
+        var sampleJson2 = {
+            // key1 & value1
+            "keyName1": {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [144.961027, -37.795947]
+            },
+            "properties": {
+                "building_type": "start",
+                "building_name": "Art West",
+                "total": 1000, //people in this building at start time
+            }
+        },
+            //key2 & value2
+            "keyName2":{
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [144.960205, -37.797596]
+            },
+            "properties": {
+                "building_type": "destination",
+                "building_name": "The Spot",
+                "change": 30, //people from start building
+            }
+        },
+            //key2 & value2
+            "keyName3":{
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [144.960205, -37.791596]
+            },
+            "properties": {
+                "building_type": "destination",
+                "building_name": "DMD",
+                //"total": 700,
+                "change": 70,
+            }
+        }
+        };
+
+        var user2 = transferJson(sampleJson2);
+        console.log(user2);
+        //load classify map
+        pathMap.on('load', function(){
+
+            pathMap.addSource('pathData',{
+                'type': "geojson",
+                'data': {
+                        "type": "FeatureCollection",
+                        "features": user2,
+                    }
+            });
+
+            pathMap.addLayer({
+                'id': 'test',
+                'type': 'circle',
+                'source' : 'pathData',
+                'paint':{
+                    'circle-color':[
+                        'match',
+                        ['get','building_type'],
+                        'start','#fbb03b',
+                        'destination','#223b53',
+                        /*other*/'#ccc'
+                    ],
+                    'circle-radius': 8,
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#333',
+                    'circle-opacity': 0.3,
+                }
+            });
+
+            var popup = new mapboxgl.Popup({
+				closeButton: false,
+				closeOnClick: false
+			});
+
+            pathMap.on('mouseenter', 'test', function (e) {
+					//new mapboxgl.Popup()
+					popup.setLngLat(e.lngLat)
+					popup.setHTML(
+                     "Building Name: " + e.features[0].properties.building_name
+                    //+ "<br> detail: " + e.features[0].properties.detail
+                    + "<br> total: " + e.features[0].properties.total
+                    + "<br> total: " + e.features[0].properties.change
+
+                    )
+
+					.addTo(pathMap);
+                    });
+
+            pathMap.on('mouseleave', 'test', function () {
+					pathMap.getCanvas().style.cursor = '';
+					popup.remove();
+					});
+
+            pathMap.on('click','test',function () {
+                var geoJSON2 = transferJson(user2)
+                 pathMap.getSource('pathData').setData({
+                        "type": "FeatureCollection",
+                        "features":geoJSON2,
+                    });
+
+            })
+
+            });
+
+
+
 
 
         function sendDate() {
