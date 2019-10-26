@@ -143,16 +143,17 @@ def GetPaths(bn, st, et):
             #start_macs.discard(row[0])
 
     for building in end_cnts:
-        results[building] = {}
-        results[building]["type"] = "Feature"
-        results[building]["geometry"] = {}
-        results[building]["geometry"]["type"] = "Point"
-        cds = buildlocationdict[building_no]
-        results[building]["geometry"]["coordinates"] = [cds[1], cds[0]]
-        results[building]["properties"] = {}
-        results[building]["properties"]["building_type"] = "destination"
-        results[building]["properties"]["building_name"] = buildnamedict[building]
-        results[building]["properties"]["change"] = end_cnts[building]
+        if building in buildlocationdict:
+            results[building] = {}
+            results[building]["type"] = "Feature"
+            results[building]["geometry"] = {}
+            results[building]["geometry"]["type"] = "Point"
+            cds = buildlocationdict[building_no]
+            results[building]["geometry"]["coordinates"] = [cds[1], cds[0]]
+            results[building]["properties"] = {}
+            results[building]["properties"]["building_type"] = "destination"
+            results[building]["properties"]["building_name"] = buildnamedict[building]
+            results[building]["properties"]["change"] = end_cnts[building]
 
 print(results)
 
