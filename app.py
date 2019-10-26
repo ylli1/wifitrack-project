@@ -155,8 +155,6 @@ def GetPaths(bn, st, et):
             results[building]["properties"]["building_name"] = buildnamedict[building]
             results[building]["properties"]["change"] = end_cnts[building]
 
-print(results)
-
     conn.close()
 
     return results
