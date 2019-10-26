@@ -148,7 +148,7 @@ def GetPaths(bn, st, et):
             results[building]["type"] = "Feature"
             results[building]["geometry"] = {}
             results[building]["geometry"]["type"] = "Point"
-            cds = buildlocationdict[building_no]
+            cds = buildlocationdict[building]
             results[building]["geometry"]["coordinates"] = [cds[1], cds[0]]
             results[building]["properties"] = {}
             results[building]["properties"]["building_type"] = "destination"
