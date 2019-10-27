@@ -79,9 +79,19 @@
         <button class="submit" type="submit" onclick="sendDate()">Submit</button>
         <br>
          <select id = "building">
-                <option value="Law">Law</option>
-                <option value="DMD">DMD</option>
-                <option value="Old_Art">Old Art</option>
+                 <option value="Melbourne Law School">Law</option>
+                 <option value="Doug McDonell">Doug McDonell</option>
+                 <option value="Old Arts">Old Arts</option>
+                 <option value="The Spot">The Spot</option>
+                 <option value="Baillieu Library">Baillieu Library</option>
+                 <option value="Alice Hoy">Alice Hoy</option>
+                 <option value="Union House">Union House</option>
+                 <option value="Arts West - West Wing">Arts West - West Wing</option>
+                 <option value="Arts West - North Wing">Arts West - North Wing</option>
+                 <option value="Eastern Resource Centre">Eastern Resource Centre</option>
+
+
+
          </select>
 
         Start Time
@@ -130,6 +140,9 @@
             // Set this to enable comparing two maps by mouse movement:
             // mousemove: true
         });
+
+        // initialize the map canvas to interact with later
+        var canvas = pathMap.getCanvasContainer();
 
         //create global empty variables
         var user;
@@ -247,16 +260,18 @@
 					});
 
             classifyMap.on('click','test',function () {
-                var geoJSON2 = transferJson(user)
+                var geoJSON = transferJson(user)
                  classifyMap.getSource('wifiData').setData({
                         "type": "FeatureCollection",
-                        "features":geoJSON2,
+                        "features":geoJSON,
                     });
 
             })
 
             });
 
+
+        //path map part
         var sampleJson2 = {
             // key1 & value1
             "keyName1": {
@@ -301,10 +316,69 @@
         };
 
         var user2 = transferJson(sampleJson2);
-        console.log(user2);
+        //console.log(user2);
+
+        var start = user2[0].geometry.coordinates;
+        function getRoute(end) {
+          // make a directions request using cycling profile
+          // an arbitrary start will always be the same
+          // only the end or destination will change
+          var start = user2[0].geometry.coordinates;
+          var url = 'https://api.mapbox.com/directions/v5/mapbox/walking/' + start[0] + ',' + start[1] + ';' + end[0] + ',' + end[1] + '?steps=true&geometries=geojson&access_token=' + mapboxgl.accessToken;
+
+          // make an XHR request https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+          var req = new XMLHttpRequest();
+          req.responseType = 'json';
+          req.open('GET', url, true);
+          req.onload = function() {
+            var data = req.response.routes[0];
+            var route = data.geometry.coordinates;
+            var geojson = {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'LineString',
+                coordinates: route
+              }
+            };
+            // if the route already exists on the map, reset it using setData
+            if (pathMap.getSource('route')) {
+              pathMap.getSource('route').setData(geojson);
+            } else { // otherwise, make a new request
+              pathMap.addLayer({
+                id: 'route',
+                type: 'line',
+                source: {
+                  type: 'geojson',
+                  data: {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                      type: 'LineString',
+                      coordinates: geojson
+                    }
+                  }
+                },
+                layout: {
+                  'line-join': 'round',
+                  'line-cap': 'round'
+                },
+                paint: {
+                  'line-color': '#3887be',
+                  'line-width': 5,
+                  'line-opacity': 0.75
+                }
+              });
+            }
+            // add turn instructions here at the end
+          };
+          req.send();
+        }
+
         //load classify map
         pathMap.on('load', function(){
 
+            getRoute(start);
             pathMap.addSource('pathData',{
                 'type': "geojson",
                 'data': {
@@ -313,7 +387,9 @@
                     }
             });
 
-            pathMap.addLayer({
+            pathMap.addLayer(
+                //add building point to map
+                {
                 'id': 'test',
                 'type': 'circle',
                 'source' : 'pathData',
@@ -326,11 +402,41 @@
                         /*other*/'#ccc'
                     ],
                     'circle-radius': 8,
+                    //'circle-radius': [
+                    //    '/',['get','change'],1
+                    //],
                     'circle-stroke-width': 1,
                     'circle-stroke-color': '#333',
                     'circle-opacity': 0.3,
                 }
-            });
+            },
+
+            );
+
+            pathMap.addLayer( // Add starting point to the map
+                {
+            id: 'point',
+            type: 'circle',
+            source: {
+              type: 'geojson',
+              data: {
+                type: 'FeatureCollection',
+                features: [{
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'Point',
+                    coordinates: start
+                  }
+                }
+                ]
+              }
+            },
+            paint: {
+              'circle-radius': 1,
+              'circle-color': '#3887be',
+            }
+          });
 
             var popup = new mapboxgl.Popup({
 				closeButton: false,
@@ -344,7 +450,7 @@
                      "Building Name: " + e.features[0].properties.building_name
                     //+ "<br> detail: " + e.features[0].properties.detail
                     + "<br> total: " + e.features[0].properties.total
-                    + "<br> total: " + e.features[0].properties.change
+                    + "<br> change: " + e.features[0].properties.change
 
                     )
 
@@ -357,16 +463,66 @@
 					});
 
             pathMap.on('click','test',function () {
-                var geoJSON2 = transferJson(user2)
+                var geoJSON2 = transferJson(user2);
                  pathMap.getSource('pathData').setData({
                         "type": "FeatureCollection",
-                        "features":geoJSON2,
+                        "features":user2,
                     });
 
             })
 
-            });
+            // make an initial directions request that
+          // starts and ends at the same location
 
+
+                // this is where the code from the next step will go
+                pathMap.on('click', function (e) {
+                    var coordsObj = e.lngLat;
+                    canvas.style.cursor = '';
+                    var coords = Object.keys(coordsObj).map(function (key) {
+                        return coordsObj[key];
+                    });
+                    var end = {
+                        type: 'FeatureCollection',
+                        features: [{
+                            type: 'Feature',
+                            properties: {},
+                            geometry: {
+                                type: 'Point',
+                                coordinates: coords
+                            }
+                        }
+                        ]
+                    };
+                    if (pathMap.getLayer('end')) {
+                        pathMap.getSource('end').setData(end);
+                    } else {
+                        pathMap.addLayer({
+                            id: 'end',
+                            type: 'circle',
+                            source: {
+                                type: 'geojson',
+                                data: {
+                                    type: 'FeatureCollection',
+                                    features: [{
+                                        type: 'Feature',
+                                        properties: {},
+                                        geometry: {
+                                            type: 'Point',
+                                            coordinates: coords
+                                        }
+                                    }]
+                                }
+                            },
+                            paint: {
+                                'circle-radius': 1,
+                                'circle-color': '#f30',
+                            }
+                        });
+                    }
+                    getRoute(coords);
+                });
+            });
 
 
 
@@ -408,19 +564,20 @@
                 "pathEndTime" : pathEndTime,
             }
             console.log(submitJSON2);
-            {#var data2 = JSON.stringify(submitJSON2);#}
-            {##}
-            {#var xhr = new XMLHttpRequest();#}
-            {#xhr.open('POST', '/users/');#}
-            {#xhr.setRequestHeader('Content-Type', 'application/json'); // （前端）声明json格式#}
-            {#xhr.send(data2);// （前端）发送json数据#}
-            {#xhr.addEventListener('loadend', function() {#}
-            {#    if(xhr.status == 201){ // 201，去看app.py！！#}
-            {#    var userJSON2 = JSON.parse(xhr.responseText);                           // （前端）处理接收的json数据#}
-            {#    user2 = transferJson(userJSON2);#}
-            {#    console.log(user2);#}
-            {#    }#}
-            {#}, false)#}
+            var data2 = JSON.stringify(submitJSON2);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/users/');
+            xhr.setRequestHeader('Content-Type', 'application/json'); // （前端）声明json格式
+            xhr.send(data2);// （前端）发送json数据
+            xhr.addEventListener('loadend', function() {
+                if(xhr.status == 201){ // 201，去看app.py！！
+                var userJSON2 = JSON.parse(xhr.responseText);                           // （前端）处理接收的json数据
+                user2 = transferJson(userJSON2);
+                console.log(user2);
+                }
+            }, false)
+
         };
 
 
