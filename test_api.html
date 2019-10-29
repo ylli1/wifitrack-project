@@ -102,6 +102,7 @@
             value="2018-06-12T11:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
 
         <button class="submit" type="submit" onclick="sendBuilding()">Submit</button>
+        <button onclick="getPath()">getPath</button>
 
     </div>
 
@@ -319,7 +320,7 @@
         //console.log(user2);
 
         var start = user2[0].geometry.coordinates;
-        function getRoute(end) {
+        function getRoute(i, end,color) {
           // make a directions request using cycling profile
           // an arbitrary start will always be the same
           // only the end or destination will change
@@ -342,11 +343,11 @@
               }
             };
             // if the route already exists on the map, reset it using setData
-            if (pathMap.getSource('route')) {
-              pathMap.getSource('route').setData(geojson);
+            if (pathMap.getSource(i)) {
+              pathMap.getSource(i).setData(geojson);
             } else { // otherwise, make a new request
               pathMap.addLayer({
-                id: 'route',
+                id: i,
                 type: 'line',
                 source: {
                   type: 'geojson',
@@ -364,7 +365,7 @@
                   'line-cap': 'round'
                 },
                 paint: {
-                  'line-color': '#3887be',
+                  'line-color': color,
                   'line-width': 5,
                   'line-opacity': 0.75
                 }
@@ -378,7 +379,7 @@
         //load classify map
         pathMap.on('load', function(){
 
-            getRoute(start);
+            //getRoute(start);
             pathMap.addSource('pathData',{
                 'type': "geojson",
                 'data': {
@@ -413,30 +414,6 @@
 
             );
 
-            pathMap.addLayer( // Add starting point to the map
-                {
-            id: 'point',
-            type: 'circle',
-            source: {
-              type: 'geojson',
-              data: {
-                type: 'FeatureCollection',
-                features: [{
-                  type: 'Feature',
-                  properties: {},
-                  geometry: {
-                    type: 'Point',
-                    coordinates: start
-                  }
-                }
-                ]
-              }
-            },
-            paint: {
-              'circle-radius': 1,
-              'circle-color': '#3887be',
-            }
-          });
 
             var popup = new mapboxgl.Popup({
 				closeButton: false,
@@ -462,7 +439,7 @@
 					popup.remove();
 					});
 
-            pathMap.on('click','test',function () {
+            pathMap.on('click', function () {
                 var geoJSON2 = transferJson(user2);
                  pathMap.getSource('pathData').setData({
                         "type": "FeatureCollection",
@@ -471,57 +448,7 @@
 
             })
 
-            // make an initial directions request that
-          // starts and ends at the same location
 
-
-                // this is where the code from the next step will go
-                pathMap.on('click', function (e) {
-                    var coordsObj = e.lngLat;
-                    canvas.style.cursor = '';
-                    var coords = Object.keys(coordsObj).map(function (key) {
-                        return coordsObj[key];
-                    });
-                    var end = {
-                        type: 'FeatureCollection',
-                        features: [{
-                            type: 'Feature',
-                            properties: {},
-                            geometry: {
-                                type: 'Point',
-                                coordinates: coords
-                            }
-                        }
-                        ]
-                    };
-                    if (pathMap.getLayer('end')) {
-                        pathMap.getSource('end').setData(end);
-                    } else {
-                        pathMap.addLayer({
-                            id: 'end',
-                            type: 'circle',
-                            source: {
-                                type: 'geojson',
-                                data: {
-                                    type: 'FeatureCollection',
-                                    features: [{
-                                        type: 'Feature',
-                                        properties: {},
-                                        geometry: {
-                                            type: 'Point',
-                                            coordinates: coords
-                                        }
-                                    }]
-                                }
-                            },
-                            paint: {
-                                'circle-radius': 1,
-                                'circle-color': '#f30',
-                            }
-                        });
-                    }
-                    getRoute(coords);
-                });
             });
 
 
@@ -579,6 +506,38 @@
             }, false)
 
         };
+
+        function getPath(){
+            var color= [
+        "#e6194B",
+        "#3cb44b",
+        "#ffe119",
+        "#4363d8",
+        "#f58231",
+        "#911eb4",
+        "#42d4f4",
+        "#f032e6",
+        "#bfef45",
+        "#fabebe",
+        "#469990",
+        "#e6beff",
+        "#9A6324",
+        "#fffac8",
+        "#800000",
+        "#aaffc3",
+        "#808000",
+        "#ffd8b1",
+        "#000075",
+        "#a9a9a9",
+        "#000000"
+      ];
+            // console.log(sampleGeoJSON[1].geometry.coordinates);
+            for(i = 1;i<user2.length; i++){
+              var routeName = 'route' + i
+              getRoute(routeName, user2[i].geometry.coordinates,color[i])
+            }
+
+        }
 
 
 
