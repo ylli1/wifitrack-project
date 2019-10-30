@@ -5,7 +5,6 @@ import sqlite3
 from GeoInfo import buildlocationdict
 from BuildingName import buildnamedict
 
-#filenames = (os.listdir("PerMinute/"))
 
 app = Flask(__name__)
 
@@ -20,7 +19,10 @@ def GetPeopleDistribution(time_s):
 
     results = {}
     time_max = int(time_s)
-    time_min = time_max - 100
+    if int(time_s[4:]) < 200:
+        time_min = time_max - 7800
+    else:
+        time_min = time_max - 200
 
     c = conn.execute(
         "SELECT building, career, count(*) FROM BInT LEFT OUTER JOIN Career on BInT.mac = Career.mac WHERE CAST(tm as int) > ? AND CAST(tm as int) <= ? GROUP BY building, career",
@@ -59,7 +61,10 @@ def GetDeviceDistribution(time_s):
 
     results = {}
     time_max = int(time_s)
-    time_min = time_max - 100
+    if int(time_s[4:]) < 200:
+        time_min = time_max - 7800
+    else:
+        time_min = time_max - 200
 
     c = conn.execute(
         "SELECT building, device, count(*) FROM BInT LEFT OUTER JOIN Device on BInT.mac = Device.mac WHERE CAST(tm as int) > ? AND CAST(tm as int) <= ? GROUP BY building, device",
@@ -105,8 +110,14 @@ def GetPaths(bn, st, et):
         if buildnamedict[num] == bn:
             building_no = num
     start_time = int(st)
-    time_min = start_time - 200
     end_time = int(et)
+
+    if end_time - start_time < 0:
+        time_min = end_time
+    elif int(st[4:]) < 200:
+        time_min = start_time - 7800
+    else:
+        time_min = start_time - 200
 
     c1 = conn.execute(
         "SELECT mac, building FROM BInT WHERE CAST(tm as int) > ? AND CAST(tm as int) <= ? AND building = ? ORDER BY tm DESC",
@@ -127,10 +138,14 @@ def GetPaths(bn, st, et):
     results[0]["properties"]["building_name"] = bn
     results[0]["properties"]["total"] = len(start_macs)
 
-    if end_time - start_time > 200:
-        s_time = end_time - 200
-    else:
+    if end_time - start_time <= 200 and end_time - start_time >= 0:
         s_time = start_time
+    else:
+        if int(et[4:]) < 200:
+            s_time = end_time - 7800
+        else:
+            s_time = end_time - 200
+
     c2 = conn.execute(
         "SELECT mac, building FROM BInT WHERE CAST(tm as int) > ? AND CAST(tm as int) <= ? ORDER BY tm DESC",
         (s_time, end_time))
@@ -276,11 +291,14 @@ def GetPaths2(bn, st, et):
         if buildnamedict[num] == bn:
             building_no = num
     start_time = int(st)
-    if int(st[4:]) < 200:
+    end_time = int(et)
+
+    if end_time - start_time < 0:
+        time_min = end_time
+    elif int(st[4:]) < 200:
         time_min = start_time - 7800
     else:
         time_min = start_time - 200
-    end_time = int(et)
 
     i = start_time
     macs = set()
@@ -387,4 +405,4 @@ def add_user():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port = 8910)
+    app.run(debug=True)
