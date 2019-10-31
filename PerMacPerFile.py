@@ -2,7 +2,6 @@
 
 import os
 import json
-import datetime
 import multiprocessing
 
 def permac(i,):
@@ -14,9 +13,7 @@ def permac(i,):
             temp = {}
             temp["changedon"] = data["changedon"]
             temp["hapmacaddress"] = data["hapmacaddress"]
-            #temp["campus"] = data["campus"]
             temp["building"] = data["building"]
-            #temp["floor"] = data["floor"]
             temp_json = json.dumps(temp)
             temp_line = str(temp_json)+"\n"
 
