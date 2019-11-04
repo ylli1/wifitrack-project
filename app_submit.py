@@ -85,6 +85,11 @@ def GetPeopleDistribution(time_s):
                 results[temp[mac]]["properties"]["detail"]["staff"] += 1
                 results[temp[mac]]["properties"]["total"] += 1
 
+    print("building,  student,  staff,  total")
+    for building in results:
+        print(results[building]["properties"]["building_name"],results[building]["properties"]["detail"]["student"],
+            results[building]["properties"]["detail"]["staff"],results[building]["properties"]["total"])
+
     return results
 
 def GetDeviceDistribution(time_s):
@@ -137,6 +142,12 @@ def GetDeviceDistribution(time_s):
             else:
                 results[temp[mac]]["properties"]["detail"]["PC"] += 1
                 results[temp[mac]]["properties"]["total"] += 1
+
+    print("building,  laptop,  mobile,  PC,  total")
+    for building in results:
+        print(results[building]["properties"]["building_name"],results[building]["properties"]["detail"]["laptop"],
+            results[building]["properties"]["detail"]["mobile"],results[building]["properties"]["detail"]["PC"],
+            results[building]["properties"]["total"])
 
     return results
 
