@@ -67,9 +67,9 @@ def GetAggregatePathsTo(wt, wd, bn, st, et):
         start_time = int(day) * 10000 + int(st)
         end_time = int(day) * 10000 + int(et)
         if int(st) < 100:
-            time_min = start_time - 7700
+            time_min = start_time - 7800
         else:
-            time_min = start_time - 100
+            time_min = start_time - 200
         i = start_time
         macs = {}
         total = 0
@@ -94,13 +94,13 @@ def GetAggregatePathsTo(wt, wd, bn, st, et):
         results[0]["properties"]["total"] += total
 
         j = end_time
-        if end_time - start_time <= 100:
+        if end_time - start_time <= 200:
             s_time = start_time
         else:
             if int(et) < 100:
-                s_time = end_time - 7700
+                s_time = end_time - 7800
             else:
-                s_time = end_time - 100
+                s_time = end_time - 200
 
         while j > s_time:
             try:
@@ -175,10 +175,10 @@ def GetAggregatePathsFrom(wt, wd, bn, st, et):
     for day in days:
         start_time = int(day) * 10000 + int(st)
         end_time = int(day) * 10000 + int(et)
-        if int(st) < 100:
-            time_min = start_time - 7700
+        if int(st) < 200:
+            time_min = start_time - 7800
         else:
-            time_min = start_time - 100
+            time_min = start_time - 200
         i = start_time
         macs = {}
         total = 0
@@ -203,13 +203,13 @@ def GetAggregatePathsFrom(wt, wd, bn, st, et):
         results[0]["properties"]["total"] += total
 
         j = end_time
-        if end_time - start_time <= 100:
+        if end_time - start_time <= 200:
             s_time = start_time
         else:
-            if int(et) < 100:
-                s_time = end_time - 7700
+            if int(et) < 200:
+                s_time = end_time - 7800
             else:
-                s_time = end_time - 100
+                s_time = end_time - 200
 
         while j > s_time:
             try:
@@ -255,7 +255,7 @@ def GetAggregatePathsFrom(wt, wd, bn, st, et):
 
 while True:
     print("input a week type: (teaching/exam/all)")
-    week_type = input
+    week_type = input()
     print("input a day: (Monday/Tuesday/...)")
     week_day = input()
     print("input a building name: (see in BuildingName.py)")
@@ -265,4 +265,7 @@ while True:
     print("input end time: (hour + minute: HHMM)")
     et = input()
 
-    geojson = GetAggregatePathsTo1(week_type, week_day, bn, st, et)
+    if int(st) <= int(et):
+        geojson = GetAggregatePathsTo(week_type, week_day, bn, st, et)
+    else:
+        geojson = GetAggregatePathsFrom(week_type, week_day, bn, st, et)
