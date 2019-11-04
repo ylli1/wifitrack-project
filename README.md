@@ -6,4 +6,4 @@
 ## Mac address type classification:
 　　sudo nohup python3 -u ClassifyDevice.py &
 ## Start the server:
-　　python3 __init__.py
+　　python3 app.py
