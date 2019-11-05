@@ -24,24 +24,5 @@ for filename in dic:
 
 print("all:", len(buildings))
 print("Parkville:", len(Parkville))
-print("***********")
-print("geo not in:")
-temp1 = set()
-for building in buildlocationdict:
-    if building not in Parkville:
-        temp1.add(building)
-print(temp1)
-print("***********")
-print("name not in:")
-temp2 = set()
-for building in buildnamedict:
-    if building not in Parkville:
-        temp2.add(building)
-print(temp2)
-print("***********")
-print("don't have geo:")
-temp3 = set()
 for building in Parkville:
-    if building not in buildlocationdict:
-        temp3.add(building)
-print(temp3)
+    print(building)
