@@ -7,3 +7,5 @@
 　　sudo nohup python3 -u ClassifyDevice.py &
 ## Start the server:
 　　python app.py
+## Video link:
+　　https://youtu.be/8mKWxwDPwBg
