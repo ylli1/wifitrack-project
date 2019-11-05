@@ -1,3 +1,5 @@
+# You can query aggregate statistics with this file.
+
 import os
 import json
 from GeoInfo import buildlocationdict
