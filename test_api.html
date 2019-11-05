@@ -75,20 +75,37 @@
 
         Date
         <input id = "date" type="datetime-local" class="startDate" name="trip-start"
-            value="2018-05-13T10:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
+            value="2018-05-16T17:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
         <button class="submit" type="submit" onclick="sendDate()">Submit</button>
         <br>
          <select id = "building">
                  <option value="Melbourne Law School">Law</option>
                  <option value="Doug McDonell">Doug McDonell</option>
-                 <option value="Old Arts">Old Arts</option>
+                 <option value="Business and Economics">Business and Economics</option>
+                 <option value="Glyn Davis Building">Glyn Davis Building</option>
                  <option value="The Spot">The Spot</option>
                  <option value="Baillieu Library">Baillieu Library</option>
                  <option value="Alice Hoy">Alice Hoy</option>
-                 <option value="Union House">Union House</option>
-                 <option value="Arts West - West Wing">Arts West - West Wing</option>
-                 <option value="Arts West - North Wing">Arts West - North Wing</option>
                  <option value="Eastern Resource Centre">Eastern Resource Centre</option>
+                 <option value="Medical Building">Arts West - West Wing</option>
+                 <option value="757 Swanston">Arts West - North Wing</option>
+                 <option value="Union House">Union House</option>
+                 <option value="David Penington Building">David Penington Building</option>
+                 <option value="11 Barry Street">11 Barry Street</option>
+                 <option value="Kwong Lee Dow Building">Kwong Lee Dow Building</option>
+                 <option value="Sidney Myer Asia Centre">Sidney Myer Asia Centre</option>
+                 <option value="Redmond Barry Building">Redmond Barry Building</option>
+                 <option value="Melbourne Graduate School of Education">Melbourne Graduate School of Education</option>
+                 <option value="Peter Hall Building">Peter Hall Building</option>
+                 <option value="Electrical and Electronic Engineering">Electrical and Electronic Engineering</option>
+                 <option value="Engineering Block A">Engineering Block A</option>
+                 <option value="Engineering Block B">Engineering Block B</option>
+                 <option value="Engineering Block C">Engineering Block C</option>
+                 <option value="Engineering Block D">Engineering Block D</option>
+                 <option value="Engineering Block E">Engineering Block E</option>
+
+
+
 
 
 
@@ -96,10 +113,10 @@
 
         Start Time
         <input id = "pathStartTime" type="datetime-local" class="startDate" name="trip-start"
-            value="2018-05-11T10:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
+            value="2018-05-17T09:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
         End Time
         <input id = "pathEndTime" type="datetime-local" class="startDate" name="trip-start"
-            value="2018-05-11T11:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
+            value="2018-05-17T10:00" min="2018-05-01T00:00" max="2018-06-30T23:00">
 
         <button class="submit" type="submit" onclick="sendBuilding()">Submit</button>
         <button onclick="getPath()">getPath</button>
@@ -468,19 +485,17 @@
 
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/users/');
-            xhr.setRequestHeader('Content-Type', 'application/json'); // （前端）声明json格式
-            xhr.send(data);// （前端）发送json数据
+            xhr.setRequestHeader('Content-Type', 'application/json'); // declare JSON format
+            xhr.send(data);// send JSON
             xhr.addEventListener('loadend', function() {
                 if(xhr.status == 201){ // 201，去看app.py！！
-                var userJSON = JSON.parse(xhr.responseText);                           // （前端）处理接收的json数据
+                var userJSON = JSON.parse(xhr.responseText);                           // receive JSON
                 user = transferJson(userJSON);
                 console.log(user);
                 }
             }, false)};
 
         function sendBuilding() {
-            {#var js={a: 1}#}
-            //send date JSON
             var building = document.getElementById("building").value;
             var pathStartTime = document.getElementById("pathStartTime").value;
             var pathEndTime = document.getElementById("pathEndTime").value;
@@ -492,14 +507,13 @@
             }
             console.log(submitJSON2);
             var data2 = JSON.stringify(submitJSON2);
-
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/users/');
-            xhr.setRequestHeader('Content-Type', 'application/json'); // （前端）声明json格式
-            xhr.send(data2);// （前端）发送json数据
+            xhr.setRequestHeader('Content-Type', 'application/json'); // declare JSON format
+            xhr.send(data2);// frontend send data
             xhr.addEventListener('loadend', function() {
-                if(xhr.status == 201){ // 201，去看app.py！！
-                var userJSON2 = JSON.parse(xhr.responseText);                           // （前端）处理接收的json数据
+                if(xhr.status == 201){
+                var userJSON2 = JSON.parse(xhr.responseText);  // frontend manipulate data
                 user2 = transferJson(userJSON2);
                 console.log(user2);
                 }
@@ -510,48 +524,64 @@
         function getPath(){
 
             var color= [
-        "#e6194B",
-        "#3cb44b",
-        "#ffe119",
-        "#4363d8",
-        "#f58231",
-        "#911eb4",
-        "#42d4f4",
-        "#f032e6",
-        "#bfef45",
-        "#fabebe",
-        "#469990",
-        "#e6beff",
-        "#9A6324",
-        "#fffac8",
-        "#800000",
-        "#aaffc3",
-        "#808000",
-        "#ffd8b1",
-        "#000075",
-        "#a9a9a9",
-        "#000000",
-        "#e6194B",
-        "#3cb44b",
-        "#ffe119",
-        "#4363d8",
-        "#f58231",
-        "#911eb4",
-        "#42d4f4",
-        "#f032e6",
-        "#bfef45",
-        "#fabebe",
-        "#469990",
-        "#e6beff",
-        "#9A6324",
-        "#fffac8",
-        "#800000",
-        "#aaffc3",
-        "#808000",
-        "#ffd8b1",
-        "#000075",
-        "#a9a9a9",
-        "#000000"
+        "#7f2704",
+                "#7f2704",
+        "#a63603",
+        "#a63603",
+                "#a63603",
+
+        "#d94801",
+                "#d94801",
+                "#d94801",
+
+        "#f16913",
+                 "#f16913",
+                 "#f16913",
+                 "#f16913",
+
+        "#fd8d3c",
+                 "#fd8d3c",
+                 "#fd8d3c",
+                 "#fd8d3c",
+                 "#fd8d3c",
+                 "#fd8d3c",
+        "#fdae6b",
+        "#fdd0a2",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce",
+        "#fee6ce"
       ];
             // console.log(sampleGeoJSON[1].geometry.coordinates);
             for(var i = 1;i<user2.length; i++){
