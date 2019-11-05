@@ -1,3 +1,5 @@
+# This file is used to calculate the percentage of each type in our results.
+
 import json
 
 PC_cnt = 0
