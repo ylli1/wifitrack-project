@@ -1,4 +1,4 @@
-# This is the main file of our server.
+# This is the main file of our server. Run this file to start the server.
 
 from flask import Flask, render_template, jsonify, request
 import os
