@@ -1,3 +1,5 @@
+# This file is used to list all the buildings in Parkville that appear in the dataset.
+
 import os
 import json
 from GeoInfo import buildlocationdict
