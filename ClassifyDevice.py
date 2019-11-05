@@ -1,6 +1,7 @@
 # Identify whether a mac address is a PC/laptop/mobile
 # PC: have more than 5 records, each record has the same hapmacaddress (same router)
 # mobile: counts of occurrs in outdoor + move continuously in short time is larger than 5.
+# laptop: other mac addresses.
 
 import os
 import json
